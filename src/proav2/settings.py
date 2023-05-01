@@ -24,9 +24,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-^hpv_@5)sh00-lbajzt^y!-g8a=i+!i6+l32)e$#0c)0th7un8'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -184,4 +181,14 @@ INSTALLED_APPS += [
 
 INSTALLED_APPS += [
     'portal',
+    'formularis',    
 ]
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+if DEBUG:
+    INSTALLED_APPS += [
+        'demoandtest',
+    ]
+
+

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% load crispy_forms_tags %}
+ 
+{% block content %}
+
+
+    <div id="html5_errors" style="display:none" class="alert alert-danger">
+		<ul>
+	    	<li>{%trans "Hi ha errors al formulari, comprova totes les pestanyes (pots fer 'Desa' a cada pestanya per localitzar l'error)"%}.</li>
+		</ul>
+	</div>
+	 
+	<div class="row">
+			<div class="col-12 col-sm-10 offset-sm-1 col-md-6 offset-md-3 col-lg-5 offset-lg-3 ">
+					<h1>{{titol}}</h1>
+			</div>
+	</div>
+	<div class="row">
+			<div class="col-12 col-sm-10 offset-sm-1 col-md-6 offset-md-3 col-lg-5 offset-lg-3 ">
+				   {% crispy form %}
+			</div>
+	</div>
+   
+	<div class="row mt-10"></div>
+   {% if tabs_msg %}
+   <script>
+   //$('form').attr('novalidate', 'novalidate');
+   	
+	$('input').bind('invalid', function() {
+		$("#html5_errors").show();
+		s= "#div_" + this.id;
+		$(s).addClass( "has-error" );
+	    return true;
+	});
+
+
+   </script>
+   {% endif %} 
+   
+
+   
+{% endblock %}
+
