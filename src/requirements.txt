@@ -10,8 +10,12 @@ ruff # May be would be better to use pylint-django ? Let's see.
 # Testing
 pytest
 
-### Pending:
+# scss
+django-libsass
 
 # django-crispy-forms
+crispy-bootstrap5
+
+### Pending:
+
 # django-tables2
-# scss compiler

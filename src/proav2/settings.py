@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -54,7 +56,9 @@ ROOT_URLCONF = 'proav2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates"),
+                 os.path.join(BASE_DIR, "templates-allauth"),
+                 ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ca'
 
 TIME_ZONE = 'UTC'
 
@@ -111,13 +115,73 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+LANGUAGES = [
+    ('ca', 'Català'),
+    ('es', 'Castellano'),
+    ('en', 'English'),
+]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/site-css/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# lib-sass: https://github.com/torchbox/django-libsass#settings
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
+
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
+INSTALLED_APPS += [
+    'compressor',
+]
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+# fi: lib-sass
+
+STATIC_ROOT = os.path.join(BASE_DIR, "tmp", "assets")
+
+# fi: lib-sass
+
+# crispy forms
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}
+
+INSTALLED_APPS += [
+    'crispy_forms',
+    'crispy_bootstrap5',
+]
+# fi: crispy forms
+
+# contrib sites
+
+SITE_ID = 1
+
+INSTALLED_APPS += [
+    'django.contrib.sites',
+]
+# fi: contrib sites
+
+# MyApps
+
+INSTALLED_APPS += [
+    'portal',
+]
