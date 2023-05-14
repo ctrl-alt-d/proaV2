@@ -64,14 +64,20 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
+                # menús
+                'menus.menu_context_processor.menu',
+
                 # `allauth` needs this from django
                 'django.template.context_processors.request',],
         },
     },
 ]
 
+LOGIN_REDIRECT_URL = '/'
+
 # ALLAUTH
 
+ACCOUNT_SIGNUP_REDIRECT_URL = "usuaris:usuaris__perfil__edita"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"

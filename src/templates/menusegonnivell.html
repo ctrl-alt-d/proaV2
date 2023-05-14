@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load static %}
+{% load compress %}
+
+{% if menu.segonnivell %}
+<ul class="nav nav-tabs">
+    {% for menuitem in menu.segon %}
+    <li class="nav-item">
+      <a
+        {% if menuitem.actiu %} 
+            class="nav-link active" aria-current="page" 
+        {% else %} 
+            class="nav-link" 
+        {% endif %}
+        href="{{menuitem.url}}">{{menuitem.text}}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}

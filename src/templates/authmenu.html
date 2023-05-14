@@ -1,0 +1,41 @@
+{% if user.is_authenticated %}
+    <li class="nav-item dropdown">
+            <a class="nav-link {% if submenu_usuaris%}active{% endif %} dropdown-toggle"
+               href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i>
+                <span style="margin-right: 0.25em"> </span>
+                {{user.perfil.nom |default:"Usuari" }}
+                <b class="caret"> </b>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url "usuaris:usuaris__perfil__edita" %}">
+                    <i class="fas fa-id-card-alt"></i>
+                    <span style="margin-right: 0.25em"> </span>
+                    Canvi Dades del Perfil
+                </a>
+                <a class="dropdown-item" href="{% url "account_change_password" %}">
+                    <i class="fas fa-key"></i>
+                    <span style="margin-right: 0.25em"> </span>
+                    Canvi Paraula de Pas
+                </a>
+                <a class="dropdown-item" href="{% url "account_email" %}">
+                    <i class="fas fa-at"></i>
+                    <span style="margin-right: 0.25em"> </span>
+                    Canvi d'Adreça Correu
+                </a>
+                <a class="dropdown-item" href="{% url "account_logout" %}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span style="margin-right: 0.25em"> </span>
+                    Sortir
+                </a>
+            </div>
+    </li>
+{% else %}
+    <li class="nav-item">
+    <a class="nav-link" href="{% url "account_login"  %}">
+        <i class="fas fa-sign-in-alt"></i>
+        <span style="margin-right: 0.25em"> </span>
+        Iniciar sessió
+    </a>
+    </li>
+{% endif %}

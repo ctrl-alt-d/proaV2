@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load static %}
+{% load compress %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">PROA+</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav">
+
+                {% for menuitem in menu.primernivell %}
+                <li class="nav-item">
+                    <a
+                    {% if menuitem.actiu %} 
+                        class="nav-link active" aria-current="page" 
+                    {% else %} 
+                        class="nav-link" 
+                    {% endif %}
+                    href="{{menuitem.url}}">{{menuitem.text}}</a>            
+                </li>
+                {% endfor %}
+
+                {% include "authmenu.html" %}
+            </ul>
+        </div>
+    </div>
+</nav>
