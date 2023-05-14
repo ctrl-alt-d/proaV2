@@ -64,6 +64,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
+                # menús
+                'menus.menu_context_processor.menu',
+
                 # `allauth` needs this from django
                 'django.template.context_processors.request',],
         },
