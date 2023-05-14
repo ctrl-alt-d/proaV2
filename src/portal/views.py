@@ -4,8 +4,10 @@ from formularis.forms import PreguntaForm
 
 from formularis.models import Pregunta
 from demoandtest.createDemoData import run as creaDemoData
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def home(request):
     """
     Prova de concepte per tal de carregar les preguntes dinàmicament des de la base de dades
