@@ -17,6 +17,7 @@ class MenuPrintItem(BaseModel):
 
 
 class MenuPrint(BaseModel):
+    activarmenuusuari: bool
     primernivell: List[MenuPrintItem] = []
     segonnivell: List[MenuPrintItem] = []
     tercernivell: List[MenuPrintItem] = []

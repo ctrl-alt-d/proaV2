@@ -20,6 +20,18 @@ from portal.views import home
 
 urlpatterns = [
     path('', home, name="home__blank__blank"),
+
+    # usuaris
+    path('usuaris/',
+         include(
+             ('usuaris.urls', "usuaris"),
+             namespace="usuaris")),
+
+    path('portal/',
+         include(
+             ('portal.urls', "portal"),
+             namespace="portal")),
+
     path('accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),
 ]

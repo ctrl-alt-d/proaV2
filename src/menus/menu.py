@@ -7,29 +7,26 @@ from menus.estructures import MenuItem, MenuPrint, MenuPrintItem
 PERFIL_BIM = "bim"
 
 
-class classebuida(object):
-    pass
-
-
 def calcula_menu(user, path):
 
     if not user.is_authenticated:
         return
 
-    perfil = determina_perfil(user)
-    menu_id, submenu_id, subsubmenu_id = extreu_ids(path)
-    arbre = construeix_arbre(perfil)
-    menu = processa_arbre(arbre, menu_id, submenu_id, subsubmenu_id)
+    perfil = _determina_perfil(user)
+    menu_id, submenu_id, subsubmenu_id = _extreu_ids(path)
+    arbre = _construeix_arbre(perfil)
+    menu = _processa_arbre(arbre, menu_id, submenu_id, subsubmenu_id)
 
     return menu
 
 
-def determina_perfil(user):
+def _determina_perfil(user):
 
     return PERFIL_BIM
 
 
-def extreu_ids(path):
+def _extreu_ids(path):
+
     novalue = (None, None, None)
     try:
         nom_path = resolve(path).url_name
@@ -49,14 +46,14 @@ def extreu_ids(path):
     return menu_id, submenu_id, subsubmenu_id
 
 
-def construeix_arbre(perfil):
+def _construeix_arbre(perfil):
 
     arbre = [
         MenuItem(
             text=_("Pàgina Principal"),
             visible=True,
-            viewprefix="home",
-            viewdefault="home__blank__blank",
+            viewprefix="portal",
+            viewdefault="portal:enquesta__blank__blank",
             submenus=[]
         )
     ]
@@ -64,53 +61,72 @@ def construeix_arbre(perfil):
     return arbre
 
 
-def processa_arbre(arbre, menu_id, submenu_id, subsubmenu_id):
-    primernivell = []
-    segonnivell = []
-    tercernivell = []
+def _processa_arbre(arbre, menu_id, submenu_id, subsubmenu_id):
+
+    activarmenuusuari = (
+        menu_id == 'usuaris' or
+        menu_id == 'account'
+    )
 
     itemsvisiblesnivell1 = [
         item for item in arbre if item.visible]
-    
+    primernivell = _calcula_primernivell(menu_id, itemsvisiblesnivell1)
+
     itemsvisiblesnivell2 = _getitemsvisiblesfrom(
         itemsvisiblesnivell1,
         menu_id)
-    
+    segonnivell = _calcula_segonnivell(submenu_id, itemsvisiblesnivell2)
+
     itemsvisiblesnivell3 = _getitemsvisiblesfrom(
         itemsvisiblesnivell2,
         submenu_id)
-
-    for item in itemsvisiblesnivell1:
-
-        label = safe(item.text)
-        actiu = item.viewprefix == menu_id
-        url = reverse(item.viewdefault)
-        menuprintitem = MenuPrintItem(text=label, actiu=actiu, url=url)
-        primernivell.append(menuprintitem)
-
-    for item in itemsvisiblesnivell2:
-
-        label = safe(item.text)
-        actiu = item.viewprefix == submenu_id
-        url = reverse(item.viewdefault)
-        menuprintitem = MenuPrintItem(text=label, actiu=actiu, url=url)
-        segonnivell.append(menuprintitem)
-
-    for item in itemsvisiblesnivell3:
-
-        label = safe(item.text)
-        actiu = item.viewprefix == subsubmenu_id
-        url = reverse(item.viewdefault)
-        menuprintitem = MenuPrintItem(text=label, actiu=actiu, url=url)
-        tercernivell.append(menuprintitem)
+    tercernivell = _calcula_tercernivell(subsubmenu_id, itemsvisiblesnivell3)
 
     return MenuPrint(
+        activarmenuusuari=activarmenuusuari,
         primernivell=primernivell,
         segonnivell=segonnivell,
         tercernivell=tercernivell)
 
 
+def _calcula_primernivell(menu_id, itemsvisiblesnivell1):
+
+    primernivell = []
+    for item in itemsvisiblesnivell1:
+        label = safe(item.text)
+        actiu = item.viewprefix == menu_id
+        url = reverse(item.viewdefault)
+        menuprintitem = MenuPrintItem(text=label, actiu=actiu, url=url)
+        primernivell.append(menuprintitem)
+    return primernivell
+
+
+def _calcula_segonnivell(submenu_id, itemsvisiblesnivell2):
+
+    segonnivell = []
+    for item in itemsvisiblesnivell2:
+        label = safe(item.text)
+        actiu = item.viewprefix == submenu_id
+        url = reverse(item.viewdefault)
+        menuprintitem = MenuPrintItem(text=label, actiu=actiu, url=url)
+        segonnivell.append(menuprintitem)
+    return segonnivell
+
+
+def _calcula_tercernivell(subsubmenu_id, itemsvisiblesnivell3):
+
+    tercernivell = []
+    for item in itemsvisiblesnivell3:
+        label = safe(item.text)
+        actiu = item.viewprefix == subsubmenu_id
+        url = reverse(item.viewdefault)
+        menuprintitem = MenuPrintItem(text=label, actiu=actiu, url=url)
+        tercernivell.append(menuprintitem)
+    return tercernivell
+
+
 def _getitemsvisiblesfrom(items, id):
+    
     itemsactius = [item for item in items if item.viewprefix == id]
 
     # no hi ha item actiu

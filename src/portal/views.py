@@ -1,18 +1,25 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from formularis.crispyhelpers import PreguntaFormHelper
 from formularis.forms import PreguntaForm
 
 from formularis.models import Pregunta
 from demoandtest.createDemoData import run as creaDemoData
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+
+
+def home(request):
+    if request.user.is_authenticated:
+        return redirect("portal:enquesta__blank__blank")
+    else:
+        return redirect(settings.LOGIN_URL)
 
 
 @login_required
-def home(request):
+def enquesta(request):
     """
     Prova de concepte per tal de carregar les preguntes dinàmicament des de la base de dades
     """
-
     creaDemoData()
     # Prova de concepte. Cal fer un formulari dimàmica amb les preguntes i possibles respostes
 
