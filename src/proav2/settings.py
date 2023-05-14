@@ -63,10 +63,55 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
+
+                # `allauth` needs this from django
+                'django.template.context_processors.request',],
         },
     },
 ]
+
+# ALLAUTH
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+INSTALLED_APPS += [
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.microsoft',
+    'allauth.socialaccount.providers.apple',
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        # For each OAuth based provider, either add a ``SocialApp``
+        # (``socialaccount`` app) containing the required client
+        # credentials, or list them here:
+        'APP': {
+            'client_id': '123',
+            'secret': '456',
+            'key': ''
+        }
+    }
+}
+
+ACCOUNT_FORMS = {'login': 'usuaris.forms.UserLoginForm'}
+
+# ACCOUNT_EMAIL_SUBJECT_PREFIX (=”[Site] “)
+
+# End AllAuth
 
 WSGI_APPLICATION = 'proav2.wsgi.application'
 
@@ -181,7 +226,8 @@ INSTALLED_APPS += [
 
 INSTALLED_APPS += [
     'portal',
-    'formularis',    
+    'formularis',
+    'usuaris',
 ]
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -190,5 +236,5 @@ if DEBUG:
     INSTALLED_APPS += [
         'demoandtest',
     ]
-
-
+    ACCOUNT_RATE_LIMITS = {}
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
