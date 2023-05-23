@@ -1,6 +1,5 @@
 import openpyxl
 from django.conf import settings
-from metadades.models import Area, Metrica
 from django.template.defaultfilters import slugify
 import os
 from django.apps import apps
@@ -9,84 +8,62 @@ from django.apps import apps
 def run():
 
     carregats, errors = [], []
+    
+    # Per cada fitxer, per aquest ordre ja que estan referenciats     
+    fitxers = ['provincia','consell','municipi']
 
-    # per cada area
-    for area in Area.objects.all():
+    # Per cada fitxer 
+    for fitxer in fitxers:
 
         if settings.DEBUG:
-            print(f"Area: {area.codi}")
+            print(f"Fitxer: {fitxer}")
 
-        # per cada categoria
-        for categoria in area.categoria_set.all():
+        carregats_aux, errors_aux = load_excel(fitxer)
+        carregats += carregats_aux
+        errors += errors_aux
 
-            carregats_aux, errors_aux = load_excel(categoria)
-            carregats += carregats_aux
-            errors += errors_aux
-
-    # Tornem els fitxers creats
+    # Tornem els fitxers carregats
     return carregats, errors
 
 
-def load_excel(categoria):
+def load_excel(fitxer):
 
     carregats, errors = [], []
-
-    if settings.DEBUG:
-        datasets_txt = ", ".join([d.nom for d in categoria.dataset_set.all()])
-        print(f"- Categoria: {categoria.nom} ({datasets_txt})")
-
-    # Cada categoria serà un nou fitxer excel
-    file_name = f"{categoria.area.codi}__{categoria.nom}"
-    file_name = slugify(file_name).replace("-", "_")
-    file_name = f"{file_name}.xlsx"
+    
+    file_name = f"{fitxer}.xlsx"
 
     excel_file = os.path.join(
-        settings.BASE_DIR, "demos/ExcelsUpload/", file_name)
+        settings.BASE_DIR, "geografia/ExcelsUpload/", file_name)
     existeix = os.path.exists(excel_file)
 
     if settings.DEBUG:
         trobat = "(fitxer trobat)" if existeix else "**No Trobat**"
         print(f"- file_name: {file_name} {trobat}")
 
-    # Si ja existeix saltem al següent
+    # Si no existeix saltem al següent
     if not existeix:
         return carregats, errors
 
     wb = openpyxl.load_workbook(filename=excel_file, data_only=True)
 
-    # per cada dataset
-    for dataset in categoria.dataset_set.all():
-
-        carregats_aux, errors_aux = carrega_pestanya(dataset, wb, file_name)
-        carregats += carregats_aux
-        errors += errors_aux
+    # Cada excel te una sola pestanya    
+    carregats_aux, errors_aux = carrega_pestanya(wb, file_name)
+    carregats += carregats_aux
+    errors += errors_aux
 
     # Gravem el nou excel i l'afegim a la llista
     return carregats, errors
 
 
-def carrega_pestanya(dataset, wb, file_name):
+def carrega_pestanya(wb, file_name):
 
-    # Conté data entry?
-    te_dataentry = comprova_te_dataentry(dataset)
-    if not te_dataentry:
-        if settings.DEBUG:
-            print(f"  - dataset: {dataset.nom} (no té data entries)")
-        return [], []
-
+    # DAVID aqui, ara hem de caregar cada fitxer la model corresponent-
+    
     carregats, errors = carrega_pestanya_anual(dataset, wb, file_name)
     carregats_mensuals, errors_mensuals = carrega_pestanya_mensual(
         dataset, wb, file_name)
 
     return carregats + carregats_mensuals, errors + errors_mensuals
-
-
-def comprova_te_dataentry(dataset):
-    return any(
-        metrica.font_de_dades == Metrica.DATAENTRY
-        for metrica in dataset.metrica_set.all()
-    )
-
 
 def carrega_pestanya_anual(dataset, wb, file_name):
 
