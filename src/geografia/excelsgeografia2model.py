@@ -1,6 +1,8 @@
 import openpyxl
+import json
 from django.conf import settings
 from django.template.defaultfilters import slugify
+from .models import Provincia, Comarca, Municipi
 import os
 from django.apps import apps
 
@@ -10,7 +12,8 @@ def run():
     carregats, errors = [], []
     
     # Per cada model, tindrem un fitxer a carregar
-    fitxers = ['Provincia','Comarca','Municipi']
+    # fitxers = ['Provincia','Comarca','Municipi']
+    fitxers = ['Provincia']
     # fitxers = apps.all_models
 
     # Per cada fitxer 
@@ -82,6 +85,7 @@ def carrega_fitxer(wb, file_name, fitxer):
     # David aqui això no funcionarà . . . millorar. AQUI ! ! ! 
     #   
     # Carrego excel
+    # Per cada linia de l'excel 
     for row in list(ws.rows)[1:]:
         if row[0].value is None:
             break
@@ -93,9 +97,12 @@ def carrega_fitxer(wb, file_name, fitxer):
             value = data[columna].value
             propietat = columna
             
-            setattr(model, propietat, value)            
+            if settings.DEBUG:
+                print( f" Valor {data[columna].value} columna ({columna}) ")
+                
+            #setattr(model, propietat, value)            
 
-        model.save()
+        #model.save()
 
     carregats += [f"{file_name}"]
 
@@ -105,3 +112,19 @@ def carrega_fitxer(wb, file_name, fitxer):
             f"**carregat {file_name} ({amb_errors})**")
 
     return carregats, errors
+
+
+if settings.DEBUG:
+
+        dades_provincia = list(
+            Provincia
+            .objects            
+            .values()
+        )        
+        print(f"""
+        ****************************************************************
+         DADES Provincia.
+        ****************************************************************
+        """)
+        print(json.dumps(dades_provincia, indent=4, sort_keys=True))
+        
