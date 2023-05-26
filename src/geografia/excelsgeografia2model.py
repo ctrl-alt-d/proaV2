@@ -11,24 +11,21 @@ def run():
 
     carregats, errors = [], []
     
-    # Per cada model, tindrem un fitxer a carregar
-    # fitxers = ['Provincia','Comarca','Municipi']
-    fitxers = ['Provincia']
-    # fitxers = apps.all_models
+    # Per cada model, tindrem un fitxer a carregar amb el mateix nom. I l'ordre és important.
+    fitxers = ['Provincia','Comarca','Municipi']    
 
     # Per cada fitxer 
     for fitxer in fitxers:
-
-        if settings.DEBUG:
-            print(f"Fitxer: {fitxer}")
 
         carregats_aux, errors_aux = load_excel(fitxer)
         carregats += carregats_aux
         errors += errors_aux
 
+    # Mostrem resultats    
+    #mostra_resultats()
     # Tornem els fitxers carregats
-    return carregats, errors
-
+    return carregats, errors    
+    
 
 def load_excel(fitxer):
 
@@ -50,7 +47,7 @@ def load_excel(fitxer):
 
     wb = openpyxl.load_workbook(filename=excel_file, data_only=True)
 
-    # Cada excel te una sola pestanya    
+    # Carreguem el fitxer al seu corresonent model
     carregats_aux, errors_aux = carrega_fitxer(wb, file_name, fitxer)
     carregats += carregats_aux
     errors += errors_aux
@@ -60,49 +57,63 @@ def load_excel(fitxer):
 def carrega_fitxer(wb, file_name, fitxer):    
    
     carregats, errors = [], []    
-
-   # Creem la capcelera
-   # capcelera = []
-
-    # Cerco el model a carregar, és el nom de l'excel a carregar sense l'extenció   
-    Model = apps.get_model(model_name=fitxer)
+   
+    # Cerco el model a carregar, és el nom de l'excel a carregar sense l'extensió   
+    Model = apps.get_model(app_label='geografia', model_name=fitxer)
 
     # Esborro dades anteriors d'aquest model
     Model.objects.all().delete()
     
-    # Carrego la pestanya
+    # Carrego la pestanya. Cada excel té una sola pestanya
     ws = wb.active
     # Nombre de columnes
     n = ws.max_column
 
-    # Creem la capcelera
-    # capcelera = []
-    # found_headers = [cell.value for cell in ws[1][:n]]
-    
+    # Creem la capcelera    
     # Recuperem els valors de la capcelera que coincideixen amb els noms del items del model
     capcelera = [cell.value for cell in ws[1][:n]]
       
-    # David aqui això no funcionarà . . . millorar. AQUI ! ! ! 
-    #   
-    # Carrego excel
+    # Carreguem l'excel
     # Per cada linia de l'excel 
     for row in list(ws.rows)[1:]:
         if row[0].value is None:
             break
         model = Model()
         cells = [cell for cell in row[:n]]
+        # Creem un diccionari amb els valors de les cel.les duplades amb el nom de la cada columna
         data = dict(zip(capcelera, cells))        
 
         for columna in capcelera:
             value = data[columna].value
             propietat = columna
             
-            if settings.DEBUG:
-                print( f" Valor {data[columna].value} columna ({columna}) ")
-                
-            #setattr(model, propietat, value)            
+            # El cas del Municipi és diferent. Ja que el codi de comarca i el codi de provincia estan 
+            # referenciats als models Comarca i Provincia. Hem de recuperar la instància del model.   
+            if fitxer == 'Municipi':
+                # busco el codi de comarca al model de comarca
+                if columna == 'codi_comarca':
 
-        #model.save()
+                    propietat = 'codi_comarca_id'
+                    valorcomarca = data[columna].value
+                    comarcamodel, _ = Comarca.objects.get_or_create(
+                    codi=valorcomarca)                    
+                    value = comarcamodel.codi
+                    
+                # busco el codi de província al model de provincia
+                elif columna == 'codi_provincia':
+
+                    propietat = 'codi_provincia_id'
+                    valorprovincia = data[columna].value
+                    provinciamodel, _ = Provincia.objects.get_or_create(
+                    codi=valorprovincia)                                        
+                    value = provinciamodel.codi
+
+            #if settings.DEBUG:
+            #    print( f" Valor {data[columna].value} columna ({columna}) ")
+                    
+            setattr(model, propietat, value)            
+
+        model.save()
 
     carregats += [f"{file_name}"]
 
@@ -113,9 +124,10 @@ def carrega_fitxer(wb, file_name, fitxer):
 
     return carregats, errors
 
-
-if settings.DEBUG:
-
+def mostra_resultats():
+    
+    if settings.DEBUG:
+        
         dades_provincia = list(
             Provincia
             .objects            
@@ -123,8 +135,32 @@ if settings.DEBUG:
         )        
         print(f"""
         ****************************************************************
-         DADES Provincia.
+        DADES Provincia.
         ****************************************************************
         """)
         print(json.dumps(dades_provincia, indent=4, sort_keys=True))
+        
+        dades_comarca = list(
+            Comarca
+            .objects            
+            .values()
+        )        
+        print(f"""
+        ****************************************************************
+        DADES Comarca.
+        ****************************************************************
+        """)
+        print(json.dumps(dades_comarca, indent=4, sort_keys=True))
+
+        dades_municipi = list(
+            Municipi
+            .objects            
+            .values()
+        )        
+        print(f"""
+        ****************************************************************
+        DADES Municipi.
+        ****************************************************************
+        """)
+        print(json.dumps(dades_municipi, indent=4, sort_keys=True))        
         
