@@ -7,6 +7,7 @@ class Provincia(models.Model):
         verbose_name="Codi de província",
         max_length=2,
         unique=True,
+        primary_key=True,
         help_text="Codi de província"
     )
     
@@ -26,6 +27,7 @@ class Comarca(models.Model):
         verbose_name="Codi del Consell Comarcal",
         max_length=2,
         unique=True,
+        primary_key=True,
         help_text="Codi del Consell Comarcal"
     )
     
@@ -45,6 +47,7 @@ class Municipi(models.Model):
         verbose_name="Codi de Municipi",
         max_length=6,
         unique=True,
+        primary_key=True,
         help_text="Codi de Municipi"
     )
     
