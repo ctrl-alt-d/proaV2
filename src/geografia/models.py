@@ -17,6 +17,8 @@ class Provincia(models.Model):
         help_text="Nom de la província"
     )
 
+    class Meta:
+        ordering = ['nom']
 
     def __str__(self):
         return f"{self.codi} > {self.nom}"
@@ -37,6 +39,8 @@ class Comarca(models.Model):
         help_text="Nom del Consell Comarcal"
     )
 
+    class Meta:
+        ordering = ['nom']
 
     def __str__(self):
         return f"{self.codi} > {self.nom}"    
@@ -82,6 +86,9 @@ class Municipi(models.Model):
         max_length=100,
         help_text="Nom de la Província"
     )
+
+    class Meta:
+        ordering = ['nom']
 
     def __str__(self):
         return f"{self.codi} > {self.nom}"    
