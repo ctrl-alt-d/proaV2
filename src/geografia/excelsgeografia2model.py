@@ -22,7 +22,7 @@ def run():
         errors += errors_aux
 
     # Mostrem resultats    
-    #mostra_resultats()
+    # mostra_resultats()
     # Tornem els fitxers carregats
     return carregats, errors    
     
