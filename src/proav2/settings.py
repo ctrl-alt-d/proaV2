@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'geografia',
 ]
 
 MIDDLEWARE = [
@@ -235,6 +234,7 @@ INSTALLED_APPS += [
     'portal',
     'formularis',
     'usuaris',
+    'geografia',
 ]
 
 # SECURITY WARNING: don't run with debug turned on in production!

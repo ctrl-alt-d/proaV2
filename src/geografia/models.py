@@ -6,7 +6,7 @@ class Provincia(models.Model):
     codi = models.CharField(
         verbose_name="Codi de província",
         max_length=2,
-        unique=True
+        unique=True,
         help_text="Codi de província"
     )
     
@@ -25,7 +25,7 @@ class Comarca(models.Model):
     codi = models.CharField(
         verbose_name="Codi del Consell Comarcal",
         max_length=2,
-        unique=True
+        unique=True,
         help_text="Codi del Consell Comarcal"
     )
     
@@ -44,7 +44,7 @@ class Municipi(models.Model):
     codi = models.CharField(
         verbose_name="Codi de Municipi",
         max_length=6,
-        unique=True
+        unique=True,
         help_text="Codi de Municipi"
     )
     
