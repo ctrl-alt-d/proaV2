@@ -234,6 +234,7 @@ INSTALLED_APPS += [
     'portal',
     'formularis',
     'usuaris',
+    'geografia',
 ]
 
 # SECURITY WARNING: don't run with debug turned on in production!

@@ -19,3 +19,4 @@ crispy-bootstrap5
 ### Pending:
 
 # django-tables2
+openpyxl==3.0.5
