@@ -40,7 +40,7 @@ def _extreu_ids(path):
         else:
             menu_id, submenu_id, subsubmenu_id = nom_path.split('__')[:3]
 
-    except (NoReverseMatch, Resolver404):
+    except (NoReverseMatch, Resolver404, ValueError):
         return novalue
 
     return menu_id, submenu_id, subsubmenu_id
