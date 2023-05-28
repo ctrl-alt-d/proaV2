@@ -228,6 +228,18 @@ INSTALLED_APPS += [
 ]
 # fi: contrib sites
 
+# imatges
+THUMBNAIL_ALIASES = {
+    '': {
+        'QandA': {'size': (200, 200), 'crop': False},
+    },
+}
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+
+INSTALLED_APPS += [
+    'easy_thumbnails',
+]
 # MyApps
 
 INSTALLED_APPS += [
@@ -235,6 +247,9 @@ INSTALLED_APPS += [
     'formularis',
     'usuaris',
     'geografia',
+    'espais',
+    'QandA',
+    'accessibilitats',
 ]
 
 # SECURITY WARNING: don't run with debug turned on in production!

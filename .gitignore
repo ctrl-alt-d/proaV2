@@ -172,3 +172,7 @@ src/tmp/*
 !src/tmp/@tmpfiles
 src/proav2/settings_local.py
 .vscode/settings.json
+
+# media (ignorar-ho tot excepte fitxer)
+src/media/*
+!src/media/@mediafiles.txt
