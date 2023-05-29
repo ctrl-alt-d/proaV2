@@ -4,7 +4,6 @@ from QandA.helpers.modelhelpers import calculacodi
 
 
 class TipusEspai(models.Model):
-
     # clau primària un codi de 5 caracters
     codi = models.TextField(
         "codi",
