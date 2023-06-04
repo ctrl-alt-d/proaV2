@@ -6,6 +6,7 @@ from accessibilitats.models import Discapacitat
 from .helpers.modelhelpers import calculacodi
 from django.utils.text import Truncator
 from django.core.validators import MinValueValidator, MaxValueValidator
+from math import isclose
 
 
 class AgrupacioPreguntes(models.Model):
@@ -349,12 +350,48 @@ class PuntuacioMaxima(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        self.tipusespai_cache = (
+        tipusespai = (
             self
             .preguntadinstipusespai
             .agrupaciopreguntes
             .tipusespai)
+
+        self.tipusespai_cache = tipusespai
+
+        self.afectacio_x_importancia = float(
+            float(self.afectacio) *
+            float(self.preguntadinstipusespai.importancia)
+        )
+
         super().save(*args, **kwargs)
+
+        totes_les_respostes = (
+            tipusespai.
+            puntuaciomaxima_set.
+            filter(discapacitat=self.discapacitat)
+        )
+
+        total_punts = sum(
+            puntmax.afectacio_x_importancia
+            for puntmax
+            in totes_les_respostes
+        )
+
+        repartits = 0.
+        for item in totes_les_respostes:
+            punts = (
+                100. * item.afectacio_x_importancia / float(total_punts)
+            )
+            punts_1decimal = round(punts, 1)
+
+            # fem update per no disparar signals ni saves
+            totes_les_respostes.filter(pk=item.pk).update(
+                punts_sense_arrodonir=punts_1decimal
+            )
+            repartits += punts
+
+        # safety check, ha de sumar 100.
+        assert isclose(100.0, repartits, abs_tol=1e-7)
 
 
 class AportacioResposta(models.Model):

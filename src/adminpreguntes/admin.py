@@ -100,8 +100,20 @@ admin.site.register(P_TipusEspai_Preguntes, PreguntaTipusEspaiAdmin)
 #
 
 
-class PuntuacioMaximaDinsTipusEspaiInline(admin.StackedInline):
+class PuntuacioMaximaDinsTipusEspaiInline(admin.TabularInline):
     model = PuntuacioMaxima
+    readonly_fields = [
+        'preguntadinstipusespai',
+        'afectacio_x_importancia',
+        'punts_sense_arrodonir',
+    ]
+    fields = [
+        'preguntadinstipusespai',
+        'afectacio',
+        'afectacio_x_importancia',
+        'punts_sense_arrodonir',
+        'punts'
+    ]
     extra = 0
 
     def get_queryset(self, request):
@@ -114,7 +126,8 @@ class PuntuacioMaximaDinsTipusEspaiInline(admin.StackedInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
-        Cal restringir: només les agrupacions d'aquell tipus d'espai
+        Cal restringir: només les preguntes d'aquell tipus d'espai
+                        i discapacitat
         """
         if db_field.name == "preguntadinstipusespai":
             kwargs["queryset"] = (
@@ -128,7 +141,6 @@ class PuntuacioMaximaDinsTipusEspaiInline(admin.StackedInline):
                 .objects
                 .filter(codi=DiscapacitatsEnum.VISUAL)
             )
-
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
