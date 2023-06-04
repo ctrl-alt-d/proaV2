@@ -118,6 +118,10 @@ class Pregunta(models.Model):
             a l'hora de plantejar la pregunta"""
     )
 
+    agrupaciopreguntes = models.ManyToManyField(
+        "AgrupacioPreguntes",
+        through='PreguntaDinsTipusEspai')
+
     def __str__(self):
         return self.text_ca
 

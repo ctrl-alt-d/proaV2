@@ -12,8 +12,12 @@ class RespostaInline(admin.TabularInline):
     model = Resposta
     extra = 0
 
+
 class PreguntaAdmin(admin.ModelAdmin):
     ordering = ["text_ca"]
+    list_filter = [
+        "agrupaciopreguntes__tipusespai__text_ca",
+    ]
     search_fields = ["text_ca", "text_es", "text_en"]
     fields = ["text_ca", "help_text_ca", "imatge"]
     inlines = [
