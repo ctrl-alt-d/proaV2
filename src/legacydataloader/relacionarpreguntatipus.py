@@ -23,17 +23,25 @@ def relacionapreguntaambtipus():
 
 
 def _relaciona(coditipusespai, preguntes, puntuacions: List[PuntuacioStruct]):
+    agrupacio_anterior = None
     for codipregunta, textpregunta in preguntes:
         codicategoria = coditipusespai + "-" + codipregunta.split("_")[1]
         agrupacio = AgrupacioPreguntes.objects.get(pk=codicategoria)
         pregunta = Pregunta.objects.get(text_ca=textpregunta)
         puntuacio = next(x for x in puntuacions if x.codi == codipregunta)
 
+        if agrupacio_anterior != agrupacio:
+            order = agrupacio.order * 1000
+            agrupacio_anterior = agrupacio
+
         preguntadinstipusespai = PreguntaDinsTipusEspai.objects.create(
             agrupaciopreguntes=agrupacio,
             pregunta=pregunta,
             importancia=puntuacio.importancia,
+            order=order
         )
+
+        order += 10
 
         _afegeix_puntuaciomaxima(
             preguntadinstipusespai, puntuacio)

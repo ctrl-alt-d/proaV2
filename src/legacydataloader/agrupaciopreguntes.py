@@ -26,14 +26,17 @@ def importagrupaciopreguntes():
             for k, v in tipus_legacy.preguntes.items()
             if k.lower().startswith("ct_")
         ]
+        order = 10
         for categoria in categories:
             codi = categoria[0].split("_")[1]
             nom = categoria[1]
             item = AgrupacioPreguntes.objects.create(
                 codi=tipus_bd.codi + "-" + codi,
                 tipusespai=tipus_bd,
-                text_ca=nom
+                text_ca=nom,
+                order=order
             )
+            order += 10
             afegits.append(item)
 
         tipus_bd.set_agrupaciopreguntes_order(afegits)
