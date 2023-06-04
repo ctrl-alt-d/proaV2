@@ -6,6 +6,7 @@ from accessibilitats.models import Discapacitat
 from .helpers.modelhelpers import calculacodi
 from django.utils.text import Truncator
 from django.core.validators import MinValueValidator, MaxValueValidator
+from math import isclose
 
 
 class AgrupacioPreguntes(models.Model):
@@ -117,6 +118,10 @@ class Pregunta(models.Model):
             text alternatiu i, per tant, ha de ser una ajuda opcional
             a l'hora de plantejar la pregunta"""
     )
+
+    agrupaciopreguntes = models.ManyToManyField(
+        "AgrupacioPreguntes",
+        through='PreguntaDinsTipusEspai')
 
     def __str__(self):
         return self.text_ca
@@ -289,6 +294,14 @@ class PuntuacioMaxima(models.Model):
         on_delete=models.CASCADE
     )
 
+    tipusespai_cache = models.ForeignKey(
+        to=TipusEspai,
+        verbose_name="Tipus espai",
+        editable=False,
+        help_text="A quin tipus espai pertany",
+        on_delete=models.RESTRICT
+    )
+
     discapacitat = models.ForeignKey(
         to=Discapacitat,
         verbose_name="Discapacitat",
@@ -300,12 +313,13 @@ class PuntuacioMaxima(models.Model):
     afectacio = models.DecimalField(
         verbose_name="Percentatge d'afectació",
         max_digits=3,
-        decimal_places=0,
+        decimal_places=2,
         default=Decimal(0),
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(0.00), MaxValueValidator(1.00)],
         help_text=(
             "Percentatge d'afectació d'aquesta pregunta a una discapacitat"
-            ". Sol ser 0, 0.25, 0.50 o 1.00"
+            "Entrar un número amb dos decimals. Sol ser 0.00, 0.25, 0.50 o "
+            "1.00."
         ),
     )
 
@@ -334,6 +348,50 @@ class PuntuacioMaxima(models.Model):
             " discapacitat ha de ser 100."
         ),
     )
+
+    def save(self, *args, **kwargs):
+        tipusespai = (
+            self
+            .preguntadinstipusespai
+            .agrupaciopreguntes
+            .tipusespai)
+
+        self.tipusespai_cache = tipusespai
+
+        self.afectacio_x_importancia = float(
+            float(self.afectacio) *
+            float(self.preguntadinstipusespai.importancia)
+        )
+
+        super().save(*args, **kwargs)
+
+        totes_les_respostes = (
+            tipusespai.
+            puntuaciomaxima_set.
+            filter(discapacitat=self.discapacitat)
+        )
+
+        total_punts = sum(
+            puntmax.afectacio_x_importancia
+            for puntmax
+            in totes_les_respostes
+        )
+
+        repartits = 0.
+        for item in totes_les_respostes:
+            punts = (
+                100. * item.afectacio_x_importancia / float(total_punts)
+            )
+            punts_1decimal = round(punts, 1)
+
+            # fem update per no disparar signals ni saves
+            totes_les_respostes.filter(pk=item.pk).update(
+                punts_sense_arrodonir=punts_1decimal
+            )
+            repartits += punts
+
+        # safety check, ha de sumar 100.
+        assert isclose(100.0, repartits, abs_tol=1e-7)
 
 
 class AportacioResposta(models.Model):
@@ -367,6 +425,7 @@ class AportacioResposta(models.Model):
         help_text=(
             "Valor del 0.1 al 1.00 quen ens indica quin percentatge de la "
             "puntuació aporta aquesta resposta al resultat final"
-            "(normalment 1.0 ó 0.5)"
+            "(normalment 1.0 ó 0.5) Si aporta 0 llavors no s'ha d'"
+            "informar aquí."
         ),
     )

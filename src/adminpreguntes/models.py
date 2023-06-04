@@ -55,3 +55,10 @@ class P_TipusEspai_Preguntes(TipusEspai):
             self.text_ca +
             f" ({n_preguntes} preguntes en {n_agrupacions} seccions)"
         )
+
+
+class P_TipusEspai_PuntuacionsMaximes_Visual(TipusEspai):
+    class Meta:
+        proxy = True
+        verbose_name = "Tipus espai i puntuacions visual max."
+        verbose_name_plural = "Tipus espais i puntuacions visual màx."

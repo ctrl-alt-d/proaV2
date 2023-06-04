@@ -1,10 +1,16 @@
 from django.contrib import admin
-from QandA.models import AgrupacioPreguntes, PreguntaDinsTipusEspai
+from QandA.models import AgrupacioPreguntes, PreguntaDinsTipusEspai, PuntuacioMaxima
+from accessibilitats.models import Discapacitat
+from estructures.constants import DiscapacitatsEnum
 from .models import (
-    P_Pregunta_i_Respostes, P_TipusEspai_AgrupacionsP, P_TipusEspai_Preguntes
+    P_Pregunta_i_Respostes, P_TipusEspai_AgrupacionsP, P_TipusEspai_Preguntes, P_TipusEspai_PuntuacionsMaximes_Visual
 )
 
 from QandA.models import Resposta
+
+#
+# Preguntes i respostes
+#
 
 
 class RespostaInline(admin.TabularInline):
@@ -12,8 +18,12 @@ class RespostaInline(admin.TabularInline):
     model = Resposta
     extra = 0
 
+
 class PreguntaAdmin(admin.ModelAdmin):
     ordering = ["text_ca"]
+    list_filter = [
+        "agrupaciopreguntes__tipusespai__text_ca",
+    ]
     search_fields = ["text_ca", "text_es", "text_en"]
     fields = ["text_ca", "help_text_ca", "imatge"]
     inlines = [
@@ -24,7 +34,9 @@ class PreguntaAdmin(admin.ModelAdmin):
 admin.site.register(P_Pregunta_i_Respostes, PreguntaAdmin)
 
 
-# Manteniment de les Agrupacions de Preguntes de cada Tipus d'espai
+#
+# Agrupacions de Preguntes a cada Tipus d'espai
+#
 
 
 class AgrupacioPreguntesInline(admin.TabularInline):
@@ -33,18 +45,20 @@ class AgrupacioPreguntesInline(admin.TabularInline):
     extra = 0
 
 
-class TipusEspaiAdmin(admin.ModelAdmin):
+class AgrupacioPreguntesTipusEspaiAdmin(admin.ModelAdmin):
     fields = ["text_ca"]
     inlines = [
         AgrupacioPreguntesInline,
     ]
 
 
-admin.site.register(P_TipusEspai_AgrupacionsP, TipusEspaiAdmin)
+admin.site.register(
+    P_TipusEspai_AgrupacionsP, AgrupacioPreguntesTipusEspaiAdmin)
 
 
-# Manteniment de les Preguntes de cada Tipus d'espai
-
+#
+# Preguntes de cada Tipus d'espai
+#
 
 class PreguntaDinsTipusEspaiInline(admin.StackedInline):
     model = PreguntaDinsTipusEspai
@@ -71,11 +85,72 @@ class PreguntaDinsTipusEspaiInline(admin.StackedInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class TipusEspaiAdmin(admin.ModelAdmin):
+class PreguntaTipusEspaiAdmin(admin.ModelAdmin):
     fields = ["text_ca"]
     inlines = [
         PreguntaDinsTipusEspaiInline,
     ]
 
 
-admin.site.register(P_TipusEspai_Preguntes, TipusEspaiAdmin)
+admin.site.register(P_TipusEspai_Preguntes, PreguntaTipusEspaiAdmin)
+
+
+#
+# Puntuacions
+#
+
+
+class PuntuacioMaximaDinsTipusEspaiInline(admin.TabularInline):
+    model = PuntuacioMaxima
+    readonly_fields = [
+        'preguntadinstipusespai',
+        'afectacio_x_importancia',
+        'punts_sense_arrodonir',
+    ]
+    fields = [
+        'preguntadinstipusespai',
+        'afectacio',
+        'afectacio_x_importancia',
+        'punts_sense_arrodonir',
+        'punts'
+    ]
+    extra = 0
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(discapacitat=DiscapacitatsEnum.VISUAL)
+
+    def get_formset(self, request, obj=None, **kwargs):
+        self.parent_obj = obj
+        return super().get_formset(request, obj, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Cal restringir: només les preguntes d'aquell tipus d'espai
+                        i discapacitat
+        """
+        if db_field.name == "preguntadinstipusespai":
+            kwargs["queryset"] = (
+                PreguntaDinsTipusEspai
+                .objects
+                .filter(agrupaciopreguntes__tipusespai=self.parent_obj)
+            )
+        if db_field.name == "discapacitat":
+            kwargs["queryset"] = (
+                Discapacitat
+                .objects
+                .filter(codi=DiscapacitatsEnum.VISUAL)
+            )
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class PuntuacioMaximaTipusEspaiAdmin(admin.ModelAdmin):
+    fields = ["text_ca"]
+    inlines = [
+        PuntuacioMaximaDinsTipusEspaiInline,
+    ]
+
+
+admin.site.register(
+    P_TipusEspai_PuntuacionsMaximes_Visual, PuntuacioMaximaTipusEspaiAdmin)
