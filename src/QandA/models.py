@@ -11,7 +11,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class AgrupacioPreguntes(models.Model):
 
     # clau primària un codi de 5 caracters
-    codi = models.TextField(
+    codi = models.CharField(
         "codi",
         max_length=5,
         editable=False,
@@ -27,21 +27,26 @@ class AgrupacioPreguntes(models.Model):
         on_delete=models.RESTRICT
     )
 
-    text_ca = models.TextField(
+    order = models.IntegerField(
+        "Codi ordenació",
+        help_text="Utilitza aquest número per ordenar les agrupacions"
+    )
+
+    text_ca = models.CharField(
         "Pregunta (cat)",
-        max_length="250",
+        max_length=250,
         blank=False,
         help_text="Pregunta en català")
 
-    text_es = models.TextField(
+    text_es = models.CharField(
         "Pregunta (es)",
-        max_length="250",
+        max_length=250,
         blank=True,
         help_text="Pregunta en castellà")
 
-    text_en = models.TextField(
+    text_en = models.CharField(
         "Pregunta (en)",
-        max_length="250",
+        max_length=250,
         blank=True,
         help_text="Pregunta amb anglès")
 
@@ -50,6 +55,7 @@ class AgrupacioPreguntes(models.Model):
 
     class Meta:
         order_with_respect_to = "tipusespai"
+        unique_together = ['tipusespai', 'order']
         verbose_name = "agrupació de preguntes"
         verbose_name_plural = "agrupacions de preguntes"
 
@@ -57,7 +63,7 @@ class AgrupacioPreguntes(models.Model):
 class Pregunta(models.Model):
 
     # clau primària un codi de 5 caracters
-    codi = models.TextField(
+    codi = models.CharField(
         "codi",
         max_length=5,
         editable=False,
@@ -65,39 +71,39 @@ class Pregunta(models.Model):
         help_text="Codi intern",
         primary_key=True)
 
-    text_ca = models.TextField(
+    text_ca = models.CharField(
         "Pregunta (cat)",
-        max_length="250",
+        max_length=250,
         blank=False,
         help_text="Pregunta en català")
 
-    text_es = models.TextField(
+    text_es = models.CharField(
         "Pregunta (es)",
-        max_length="250",
+        max_length=250,
         blank=True,
         help_text="Pregunta en castellà")
 
-    text_en = models.TextField(
+    text_en = models.CharField(
         "Pregunta (en)",
-        max_length="250",
+        max_length=250,
         blank=True,
         help_text="Pregunta amb anglès")
 
-    help_text_ca = models.TextField(
+    help_text_ca = models.CharField(
         "Text ajuda (cat)",
-        max_length="250",
+        max_length=250,
         blank=False,
         help_text="Text ajuda en català")
 
-    help_text_es = models.TextField(
+    help_text_es = models.CharField(
         "Text ajuda (es)",
-        max_length="250",
+        max_length=250,
         blank=True,
         help_text="Text ajuda en castellà")
 
-    help_text_en = models.TextField(
+    help_text_en = models.CharField(
         "Text ajuda (en)",
-        max_length="250",
+        max_length=250,
         blank=True,
         help_text="Text ajuda amb anglès")
 
@@ -118,12 +124,13 @@ class Pregunta(models.Model):
     class Meta:
         verbose_name_plural = "preguntes"
         verbose_name = "preguntes"
+        ordering = ['text_ca']
 
 
 class Resposta(models.Model):
 
     # clau primària un codi de 5 caracters
-    codi = models.TextField(
+    codi = models.CharField(
         "codi",
         max_length=30,
         editable=False,
@@ -140,22 +147,27 @@ class Resposta(models.Model):
         on_delete=models.RESTRICT
     )
 
+    order = models.IntegerField(
+        "Codi ordenació",
+        help_text="Utilitza aquest número per ordenar les respostes"
+    )
+
     # text
-    text_ca = models.TextField(
+    text_ca = models.CharField(
         "Resposta (cat)",
-        max_length="250",
+        max_length=250,
         blank=False,
         help_text="Resposta en català")
 
-    text_es = models.TextField(
+    text_es = models.CharField(
         "Resposta (es)",
-        max_length="250",
+        max_length=250,
         blank=True,
         help_text="Resposta en castellà")
 
-    text_en = models.TextField(
+    text_en = models.CharField(
         "Resposta (en)",
-        max_length="250",
+        max_length=250,
         blank=True,
         help_text="Resposta amb anglès")
 
@@ -173,6 +185,7 @@ class Resposta(models.Model):
 
     class Meta:
         order_with_respect_to = "pregunta"
+        unique_together = ['pregunta', 'order']
         verbose_name = "resposta"
         verbose_name_plural = "respostes"
 
@@ -184,10 +197,9 @@ class PreguntaDinsTipusEspai(models.Model):
 
     agrupaciopreguntes = models.ForeignKey(
         to=AgrupacioPreguntes,
-        verbose_name="Pregunta",
-        editable=False,
-        help_text="Pregunta",
-        on_delete=models.RESTRICT
+        verbose_name="Secció",
+        help_text="Dins un tipus d'espai les preguntes s'agrupen en seccions",
+        on_delete=models.RESTRICT,
     )
 
     tipusespai_cache = models.ForeignKey(
@@ -201,9 +213,13 @@ class PreguntaDinsTipusEspai(models.Model):
     pregunta = models.ForeignKey(
         to=Pregunta,
         verbose_name="Pregunta",
-        editable=False,
         help_text="Pregunta",
         on_delete=models.RESTRICT
+    )
+
+    order = models.IntegerField(
+        "Codi ordenació",
+        help_text="Utilitza aquest número per ordenar les respostes"
     )
 
     class Importancia(models.IntegerChoices):
@@ -219,6 +235,7 @@ class PreguntaDinsTipusEspai(models.Model):
 
     class Meta:
         order_with_respect_to = "agrupaciopreguntes"
+        unique_together = ['agrupaciopreguntes', 'order']
 
     def __str__(self):
         agrupacio = Truncator(self.agrupaciopreguntes).words(10)

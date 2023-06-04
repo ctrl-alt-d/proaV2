@@ -244,12 +244,27 @@ INSTALLED_APPS += [
 
 INSTALLED_APPS += [
     'portal',
+
+    # Helpers formularis de Q and A
     'formularis',
+
+    # Dades relacionades amb usuaris i permisos
     'usuaris',
+
+    # Models de geografia
     'geografia',
+
+    # Models tipus d'espais
     'espais',
+
+    # Les preguntes i respostes
     'QandA',
+
+    # Models de discapacitats (visual, ...)
     'accessibilitats',
+
+    # Formularis admin per mantenir tipus espais, agrupacions p, etc
+    'adminpreguntes',
 ]
 
 # SECURITY WARNING: don't run with debug turned on in production!

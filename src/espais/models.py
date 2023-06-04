@@ -5,7 +5,7 @@ from QandA.helpers.modelhelpers import calculacodi
 
 class TipusEspai(models.Model):
     # clau primària un codi de 5 caracters
-    codi = models.TextField(
+    codi = models.CharField(
         "codi",
         max_length=5,
         default=calculacodi,
@@ -13,21 +13,21 @@ class TipusEspai(models.Model):
         help_text="Codi intern",
         primary_key=True)
 
-    text_ca = models.TextField(
+    text_ca = models.CharField(
         "Tipus espai (cat)",
-        max_length="50",
+        max_length=250,
         blank=False,
         help_text="Tipus espai en català")
 
-    text_es = models.TextField(
+    text_es = models.CharField(
         "Tipus espai (es)",
-        max_length="50",
+        max_length=250,
         blank=True,
         help_text="Tipus espai en castellà")
 
-    text_en = models.TextField(
+    text_en = models.CharField(
         "Tipus espai (en)",
-        max_length="50",
+        max_length=250,
         blank=True,
         help_text="Tipus espai amb anglès")
 
@@ -37,6 +37,5 @@ class TipusEspai(models.Model):
     class Meta:
         verbose_name = "tipus d'espai"
         verbose_name_plural = "tipus d'espais"
-
-
+        ordering = ["text_ca"]
 
