@@ -293,6 +293,14 @@ class PuntuacioMaxima(models.Model):
         on_delete=models.CASCADE
     )
 
+    tipusespai_cache = models.ForeignKey(
+        to=TipusEspai,
+        verbose_name="Tipus espai",
+        editable=False,
+        help_text="A quin tipus espai pertany",
+        on_delete=models.RESTRICT
+    )
+
     discapacitat = models.ForeignKey(
         to=Discapacitat,
         verbose_name="Discapacitat",
@@ -304,12 +312,13 @@ class PuntuacioMaxima(models.Model):
     afectacio = models.DecimalField(
         verbose_name="Percentatge d'afectació",
         max_digits=3,
-        decimal_places=0,
+        decimal_places=2,
         default=Decimal(0),
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(0.00), MaxValueValidator(1.00)],
         help_text=(
             "Percentatge d'afectació d'aquesta pregunta a una discapacitat"
-            ". Sol ser 0, 0.25, 0.50 o 1.00"
+            "Entrar un número amb dos decimals. Sol ser 0.00, 0.25, 0.50 o "
+            "1.00."
         ),
     )
 
@@ -338,6 +347,14 @@ class PuntuacioMaxima(models.Model):
             " discapacitat ha de ser 100."
         ),
     )
+
+    def save(self, *args, **kwargs):
+        self.tipusespai_cache = (
+            self
+            .preguntadinstipusespai
+            .agrupaciopreguntes
+            .tipusespai)
+        super().save(*args, **kwargs)
 
 
 class AportacioResposta(models.Model):
@@ -371,6 +388,7 @@ class AportacioResposta(models.Model):
         help_text=(
             "Valor del 0.1 al 1.00 quen ens indica quin percentatge de la "
             "puntuació aporta aquesta resposta al resultat final"
-            "(normalment 1.0 ó 0.5)"
+            "(normalment 1.0 ó 0.5) Si aporta 0 llavors no s'ha d'"
+            "informar aquí."
         ),
     )
