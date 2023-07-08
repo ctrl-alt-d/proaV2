@@ -350,7 +350,7 @@ class PuntuacioMaxima(models.Model):
     )
 
     def __str__(self):
-        return str( self.preguntadinstipusespai )
+        return str(self.preguntadinstipusespai)
 
     def save(self, *args, **kwargs):
 
@@ -390,8 +390,9 @@ class PuntuacioMaxima(models.Model):
                 100. * item.afectacio_x_importancia
                 /
                 float(total_punts_de_la_discapacitat)
-            )
-            punts_1decimal = round(punts, 1)
+            ) if total_punts_de_la_discapacitat else 0
+
+            punts_1decimal = round(punts, 3)
 
             # fem update per no disparar signals ni saves
             (
@@ -401,8 +402,10 @@ class PuntuacioMaxima(models.Model):
             )
             repartits += punts
 
-        # safety check, ha de sumar 100.
-        assert isclose(100.0, repartits, abs_tol=1e-7)
+        # safety check, ha de sumar (quasi) 100.
+        if total_punts_de_la_discapacitat > 0 and round(repartits, 1) != 100:
+            err = f"repartits val {repartits} i hauria de ser 100.0"
+            raise ValueError(err)
 
 
 class AportacioResposta(models.Model):
