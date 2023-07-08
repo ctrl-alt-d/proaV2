@@ -275,7 +275,7 @@ class PuntuacioMaxima(models.Model):
         puntuació: 3 (decidit per BIM)
 
     Nota:
-        43.25 és la suma de les afectacio_x_importancia de totes les 
+        43.25 és la suma de les afectacio_x_importancia de totes les
         afectacions d'una discapacitat en un tipus d'espai.
 
     Nota - ToDo:
@@ -349,7 +349,12 @@ class PuntuacioMaxima(models.Model):
         ),
     )
 
+    def __str__(self):
+        return str( self.preguntadinstipusespai )
+
     def save(self, *args, **kwargs):
+
+        # Recalculem: afectacio_x_importancia
         tipusespai = (
             self
             .preguntadinstipusespai
@@ -363,30 +368,36 @@ class PuntuacioMaxima(models.Model):
             float(self.preguntadinstipusespai.importancia)
         )
 
+        # Desem
         super().save(*args, **kwargs)
 
-        totes_les_respostes = (
+        # Recalculem: punts_sense_arrodonir
+        totes_les_respostes_de_la_discapacitat = (
             tipusespai.
             puntuaciomaxima_set.
             filter(discapacitat=self.discapacitat)
         )
 
-        total_punts = sum(
+        total_punts_de_la_discapacitat = sum(
             puntmax.afectacio_x_importancia
             for puntmax
-            in totes_les_respostes
+            in totes_les_respostes_de_la_discapacitat
         )
 
         repartits = 0.
-        for item in totes_les_respostes:
+        for item in totes_les_respostes_de_la_discapacitat:
             punts = (
-                100. * item.afectacio_x_importancia / float(total_punts)
+                100. * item.afectacio_x_importancia
+                /
+                float(total_punts_de_la_discapacitat)
             )
             punts_1decimal = round(punts, 1)
 
             # fem update per no disparar signals ni saves
-            totes_les_respostes.filter(pk=item.pk).update(
-                punts_sense_arrodonir=punts_1decimal
+            (
+                totes_les_respostes_de_la_discapacitat
+                .filter(pk=item.pk)
+                .update(punts_sense_arrodonir=punts_1decimal)  # <-- Update
             )
             repartits += punts
 

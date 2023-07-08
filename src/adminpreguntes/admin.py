@@ -1,5 +1,6 @@
+from django import forms
 from django.contrib import admin
-from QandA.models import AgrupacioPreguntes, PreguntaDinsTipusEspai, PuntuacioMaxima
+from QandA.models import AgrupacioPreguntes, Pregunta, PreguntaDinsTipusEspai, PuntuacioMaxima
 from accessibilitats.models import Discapacitat
 from estructures.constants import DiscapacitatsEnum
 from .models import (
@@ -7,6 +8,7 @@ from .models import (
 )
 
 from QandA.models import Resposta
+from django.contrib.admin.widgets import AutocompleteSelect
 
 #
 # Preguntes i respostes
@@ -59,9 +61,26 @@ admin.site.register(
 #
 # Preguntes de cada Tipus d'espai
 #
+@admin.register(Pregunta)
+class WorkerModelAdmin(admin.ModelAdmin):
+    search_fields = ['text_ca']
+
+
+class PreguntaDinsTipusEspaiForm(forms.ModelForm):
+    class Meta:
+        widgets = {
+            'pregunta': AutocompleteSelect(
+                PreguntaDinsTipusEspai._meta.get_field('pregunta'),
+                admin.site,
+                attrs={'style': 'width:calc(100% - 60px);'}
+            ),
+        }
+
 
 class PreguntaDinsTipusEspaiInline(admin.StackedInline):
     model = PreguntaDinsTipusEspai
+    form = PreguntaDinsTipusEspaiForm
+    autocomplete_fields = ['pregunta']
     extra = 0
     ordering = [
         "tipusespai_cache__text_ca",
@@ -96,11 +115,12 @@ admin.site.register(P_TipusEspai_Preguntes, PreguntaTipusEspaiAdmin)
 
 
 #
-# Puntuacions
+# Puntuacions Màximes Visual
 #
 
 
-class PuntuacioMaximaDinsTipusEspaiInline(admin.TabularInline):
+class PuntuacioMaximaVisualDinsTipusEspaiInline(admin.TabularInline):
+
     model = PuntuacioMaxima
     readonly_fields = [
         'preguntadinstipusespai',
@@ -145,12 +165,13 @@ class PuntuacioMaximaDinsTipusEspaiInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class PuntuacioMaximaTipusEspaiAdmin(admin.ModelAdmin):
+class PuntuacioMaximaVisualTipusEspaiAdmin(admin.ModelAdmin):
     fields = ["text_ca"]
     inlines = [
-        PuntuacioMaximaDinsTipusEspaiInline,
+        PuntuacioMaximaVisualDinsTipusEspaiInline,
     ]
 
 
 admin.site.register(
-    P_TipusEspai_PuntuacionsMaximes_Visual, PuntuacioMaximaTipusEspaiAdmin)
+    P_TipusEspai_PuntuacionsMaximes_Visual,
+    PuntuacioMaximaVisualTipusEspaiAdmin)
