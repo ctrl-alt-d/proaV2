@@ -9,6 +9,8 @@ ruff # May be would be better to use pylint-django ? Let's see.
 
 # Testing
 pytest
+Faker
+factory-boy
 
 # scss
 django-libsass
