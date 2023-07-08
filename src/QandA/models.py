@@ -6,7 +6,7 @@ from accessibilitats.models import Discapacitat
 from .helpers.modelhelpers import calculacodi
 from django.utils.text import Truncator
 from django.core.validators import MinValueValidator, MaxValueValidator
-from math import isclose
+from django.db.models import Sum
 
 
 class AgrupacioPreguntes(models.Model):
@@ -384,7 +384,6 @@ class PuntuacioMaxima(models.Model):
             in totes_les_respostes_de_la_discapacitat
         )
 
-        repartits = 0.
         for item in totes_les_respostes_de_la_discapacitat:
             punts = (
                 100. * item.afectacio_x_importancia
@@ -400,11 +399,22 @@ class PuntuacioMaxima(models.Model):
                 .filter(pk=item.pk)
                 .update(punts_sense_arrodonir=punts_1decimal)  # <-- Update
             )
-            repartits += punts
 
         # safety check, ha de sumar (quasi) 100.
-        if total_punts_de_la_discapacitat > 0 and round(repartits, 1) != 100:
-            err = f"repartits val {repartits} i hauria de ser 100.0"
+        if total_punts_de_la_discapacitat > 0:
+            return
+        
+        total_punts_sense_arrodonir = (
+            totes_les_respostes_de_la_discapacitat
+            .aggregate(total=Sum("punts_sense_arrodonir"))
+            ["total"]
+        )
+        err = ( 
+            "El total de punts sense arrodonir hauria de ser 100"
+            f" i és {total_punts_sense_arrodonir} "
+        )
+        round_punts_sense_arrodonir = round(total_punts_sense_arrodonir, 1)        
+        if round_punts_sense_arrodonir != 100:
             raise ValueError(err)
 
 

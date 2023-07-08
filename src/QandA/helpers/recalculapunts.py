@@ -30,16 +30,20 @@ def recalcula(discapacitat: Discapacitat, tipusespai: TipusEspai) -> None:
         x.punts
         for x in punts_maxims
     )
+
     sobrant = int(round(total_punts - total_punts_sense_arrodonir))
 
+    # Algoritme molt millorable, pordriem repartir proporcional
+    # als punts que ja tenen.
+
+    # Decidim si hem de sumar o restar punts
+    diferencial = -1 if sobrant > 0 else +1
+
     # Ordenem per començar a repartir el sobrant
-    def clau(x): return x.punts if sobrant > 0 else -x.punts
+    def clau(x): return -x.punts
     punts_ordenats = sorted(punts_maxims, key=clau)
 
     # Repartim el sobrant de punt en punt.
-    # Algoritme molt millorable, pordriem repartir proporcional
-    # als punts que ja tenen.
-    diferencial = -1 if sobrant > 0 else +1
     for puntuacio in punts_ordenats:
         _actualitza_punts(puntuacio, puntuacio.punts + diferencial)
         sobrant += diferencial

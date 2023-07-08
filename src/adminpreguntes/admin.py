@@ -9,6 +9,7 @@ from .models import (
 
 from QandA.models import Resposta
 from django.contrib.admin.widgets import AutocompleteSelect
+from QandA.helpers import recalculapunts
 
 #
 # Preguntes i respostes
@@ -156,13 +157,18 @@ class PuntuacioMaximaVisualDinsTipusEspaiInline(admin.TabularInline):
                 .filter(agrupaciopreguntes__tipusespai=self.parent_obj)
             )
         if db_field.name == "discapacitat":
-            kwargs["queryset"] = (
-                Discapacitat
-                .objects
-                .filter(codi=DiscapacitatsEnum.VISUAL)
-            )
+            kwargs["queryset"] = _get_discapacitat_by_code(
+                DiscapacitatsEnum.VISUAL)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+@admin.action(description="Recalcula punts")
+def recalcula_punts_visual(modeladmin, request, queryset):
+    discapacitat = _get_discapacitat_by_code(DiscapacitatsEnum.VISUAL).first()
+    for tipusespai in list(queryset.all()):
+        print(str(tipusespai))
+        recalculapunts.recalcula(discapacitat, tipusespai)
 
 
 class PuntuacioMaximaVisualTipusEspaiAdmin(admin.ModelAdmin):
@@ -170,8 +176,17 @@ class PuntuacioMaximaVisualTipusEspaiAdmin(admin.ModelAdmin):
     inlines = [
         PuntuacioMaximaVisualDinsTipusEspaiInline,
     ]
+    actions = [recalcula_punts_visual]
 
 
 admin.site.register(
     P_TipusEspai_PuntuacionsMaximes_Visual,
     PuntuacioMaximaVisualTipusEspaiAdmin)
+
+
+def _get_discapacitat_by_code(codi):
+    return (
+        Discapacitat
+        .objects
+        .filter(codi=codi)
+    )
