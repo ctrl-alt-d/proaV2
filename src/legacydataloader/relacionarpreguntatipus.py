@@ -1,11 +1,13 @@
 from typing import List
-from QandA.helpers.modelhelpers import calculacodi
-from QandA.models import AgrupacioPreguntes, AportacioResposta, Pregunta, PreguntaDinsTipusEspai, PuntuacioMaxima
+from QandA.models import (
+    AgrupacioPreguntes, AportacioResposta, Exclusio, Pregunta,
+    PreguntaDinsTipusEspai, PuntuacioMaxima
+)
 from accessibilitats.models import Discapacitat
 from estructures.constants import DiscapacitatsEnum
+from legacydata.exclusions import Exclusions
 from legacydata.puntuacions import PuntuacioStruct, Puntuacions
 from legacydata.tipusespais import GetTipusEspaisStructs
-from legacydata.respostes import respostesdict
 
 
 def relacionapreguntaambtipus():
@@ -43,6 +45,9 @@ def _relaciona(coditipusespai, preguntes, puntuacions: List[PuntuacioStruct]):
 
         order += 10
 
+        _considera_exclusio(
+            coditipusespai, preguntadinstipusespai, codipregunta)
+
         _afegeix_puntuaciomaxima(
             preguntadinstipusespai, puntuacio)
 
@@ -54,6 +59,39 @@ def _relaciona(coditipusespai, preguntes, puntuacions: List[PuntuacioStruct]):
 
         _afegeig_aportacioresposta(
             preguntadinstipusespai, puntuacio.r3, puntuacio.p3)
+
+
+def _considera_exclusio(
+        coditipusespai: str,
+        preguntadinstipusespai: PreguntaDinsTipusEspai,
+        codipregunta: str):
+
+    exclusions_espai = Exclusions[coditipusespai]
+    exclusions = [
+        exclusio for exclusio in exclusions_espai
+        if exclusio.codi == codipregunta
+    ]
+    for exclusio in exclusions:
+        discapacitat = (
+            Discapacitat
+            .objects
+            .get(codi=exclusio.discapacitat)
+        )
+        resposta = (
+            preguntadinstipusespai
+            .pregunta
+            .resposta_set
+            .get(codi__startswith=exclusio.resposta)
+        )
+        _ = (
+            Exclusio
+            .objects
+            .create(
+                preguntadinstipusespai=preguntadinstipusespai,
+                discapacitat=discapacitat,
+                resposta=resposta
+            )
+        )
 
 
 def _afegeix_puntuaciomaxima(

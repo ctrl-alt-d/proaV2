@@ -239,7 +239,7 @@ class PreguntaDinsTipusEspai(models.Model):
     )
 
     class Meta:
-        order_with_respect_to = "agrupaciopreguntes"
+        order_with_respect_to = "agrupaciopreguntes"        
         unique_together = ['agrupaciopreguntes', 'order']
 
     def __str__(self):
@@ -403,17 +403,17 @@ class PuntuacioMaxima(models.Model):
         # safety check, ha de sumar (quasi) 100.
         if total_punts_de_la_discapacitat > 0:
             return
-        
+
         total_punts_sense_arrodonir = (
             totes_les_respostes_de_la_discapacitat
             .aggregate(total=Sum("punts_sense_arrodonir"))
             ["total"]
         )
-        err = ( 
+        err = (
             "El total de punts sense arrodonir hauria de ser 100"
             f" i és {total_punts_sense_arrodonir} "
         )
-        round_punts_sense_arrodonir = round(total_punts_sense_arrodonir, 1)        
+        round_punts_sense_arrodonir = round(total_punts_sense_arrodonir, 1)
         if round_punts_sense_arrodonir != 100:
             raise ValueError(err)
 
@@ -453,3 +453,61 @@ class AportacioResposta(models.Model):
             "informar aquí."
         ),
     )
+
+
+class Exclusio(models.Model):
+    """
+    Donada una pregunta (dins espai) i una discapacitat tenim
+    respostes que directament exclouen l'accessibilitat.
+    """
+
+    preguntadinstipusespai = models.ForeignKey(
+        to=PreguntaDinsTipusEspai,
+        verbose_name="Pregunta",
+        editable=True,
+        help_text="Pregunta dins una agrupació de preguntes",
+        on_delete=models.CASCADE
+    )
+
+    tipusespai_cache = models.ForeignKey(
+        to=TipusEspai,
+        verbose_name="Tipus espai",
+        editable=False,
+        help_text="A quin tipus espai pertany",
+        on_delete=models.RESTRICT
+    )
+
+    discapacitat = models.ForeignKey(
+        to=Discapacitat,
+        verbose_name="Discapacitat",
+        editable=True,
+        help_text="Aplicat a certa discapacitat",
+        on_delete=models.CASCADE
+    )
+
+    resposta = models.ForeignKey(
+        to=Resposta,
+        verbose_name="Discapacitat",
+        editable=True,
+        help_text="Aplicat a certa discapacitat",
+        on_delete=models.CASCADE
+    )
+
+
+
+    def __str__(self):
+        return str(self.preguntadinstipusespai)
+
+    def save(self, *args, **kwargs):
+
+        # Recalculem: afectacio_x_importancia
+        tipusespai = (
+            self
+            .preguntadinstipusespai
+            .agrupaciopreguntes
+            .tipusespai)
+
+        self.tipusespai_cache = tipusespai
+
+        # Desem
+        super().save(*args, **kwargs)

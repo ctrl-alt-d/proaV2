@@ -22,5 +22,6 @@ Items a carregar:
 * [x] Tipus d'Espai
 * [x] Agrupació de preguntes (dins tipus espai)
 * [x] PreguntaDinsTipusEspai: Relació Pregunta-Agrupació (amb camp importància)
-* [ ] PuntuacioMaxima (d'una pregunta per una discapacitat) 
-* [ ] AportacioResposta (percentatge que aporta cada resposta respecte la PuntuacioMaxima)
+* [x] PuntuacioMaxima (d'una pregunta per una discapacitat) 
+* [x] AportacioResposta (percentatge que aporta cada resposta respecte la PuntuacioMaxima)
+* [x] Exclusions

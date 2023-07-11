@@ -1,5 +1,6 @@
 from django.db import models
-from QandA.models import Pregunta
+from QandA.models import Pregunta, PreguntaDinsTipusEspai
+from django.utils.text import Truncator
 
 from espais.models import TipusEspai
 
@@ -62,3 +63,22 @@ class P_TipusEspai_PuntuacionsMaximes_Visual(TipusEspai):
         proxy = True
         verbose_name = "Tipus espai i puntuacions visual max."
         verbose_name_plural = "Tipus espais i puntuacions visual màx."
+
+
+class P_PreguntaDinsTipusEspai_Exclusions(PreguntaDinsTipusEspai):
+    class Meta:
+        proxy = True
+        verbose_name = "Exclusions"
+        verbose_name_plural = "Exclusions"
+        ordering = ["order", ]
+
+    def __str__(self):
+        n_exclusions = self.exclusio_set.count()
+        agrupacio = Truncator(self.agrupaciopreguntes.text_ca).words(10)
+        n_exclusions_txt = (
+            f" 🚫 {n_exclusions} exclusió 🚫" if n_exclusions == 1 else
+            f" 🚫 {n_exclusions} exclusins 🚫" if n_exclusions > 1 else
+            ""
+        )
+        return f"{agrupacio} - {self.pregunta} {n_exclusions_txt}"
+    

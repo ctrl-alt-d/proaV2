@@ -29,7 +29,7 @@ def importpreguntes():
         order = 10
         for resposta in respostes:
             codi = resposta[0] + "-" + calculacodi()
-            text = resposta[1]            
+            text = resposta[1]
             Resposta.objects.create(
                 pregunta=pregunta,
                 codi=codi,

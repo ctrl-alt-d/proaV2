@@ -5,12 +5,12 @@ from typing import Optional
 class PuntuacioStruct(BaseModel):
     codi: str
     importancia: int
-    r1: Optional[str]
-    p1: Optional[float]
-    r2: Optional[str]
-    p2: Optional[float]
-    r3: Optional[str]
-    p3: Optional[float]
+    r1: Optional[str]    # Resposta 1
+    p1: Optional[float]  # Punts resposta 1
+    r2: Optional[str]    # Resposta 2
+    p2: Optional[float]  # Punts resposta 2
+    r3: Optional[str]    # Resposta 3
+    p3: Optional[float]  # Punts resposta 3
     visual_pct: Optional[float]
     visual_punts: int
     auditiu_pct: Optional[float]

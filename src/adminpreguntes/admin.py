@@ -1,10 +1,15 @@
 from django import forms
 from django.contrib import admin
-from QandA.models import AgrupacioPreguntes, Pregunta, PreguntaDinsTipusEspai, PuntuacioMaxima
+from QandA.models import (
+    AgrupacioPreguntes, Exclusio, Pregunta, PreguntaDinsTipusEspai,
+    PuntuacioMaxima
+)
 from accessibilitats.models import Discapacitat
 from estructures.constants import DiscapacitatsEnum
 from .models import (
-    P_Pregunta_i_Respostes, P_TipusEspai_AgrupacionsP, P_TipusEspai_Preguntes, P_TipusEspai_PuntuacionsMaximes_Visual
+    P_Pregunta_i_Respostes, P_PreguntaDinsTipusEspai_Exclusions,
+    P_TipusEspai_AgrupacionsP, P_TipusEspai_Preguntes,
+    P_TipusEspai_PuntuacionsMaximes_Visual
 )
 
 from QandA.models import Resposta
@@ -190,3 +195,49 @@ def _get_discapacitat_by_code(codi):
         .objects
         .filter(codi=codi)
     )
+
+
+#
+# Exclusions
+#
+
+class ExclusioInline(admin.TabularInline):
+
+    model = Exclusio
+    readonly_fields = [
+        'preguntadinstipusespai',
+    ]
+    extra = 0
+
+    def get_formset(self, request, obj=None, **kwargs):
+        self.parent_obj = obj
+        return super().get_formset(request, obj, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        Cal restringir: només les preguntes d'aquell tipus d'espai
+                        i discapacitat
+        """
+        if db_field.name == "resposta":
+            kwargs["queryset"] = (
+                Resposta
+                .objects
+                .filter(pregunta=self.parent_obj.pregunta)
+            )
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class PreguntaTipusEspaiExclusioAdmin(admin.ModelAdmin):
+    list_filter = ["tipusespai_cache", ]
+    fields = ["pregunta"]
+    readonly_fields = [
+        'pregunta',
+    ]
+    inlines = [
+        ExclusioInline,
+    ]
+
+
+admin.site.register(
+    P_PreguntaDinsTipusEspai_Exclusions, PreguntaTipusEspaiExclusioAdmin)
