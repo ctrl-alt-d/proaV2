@@ -70,11 +70,11 @@ class P_PreguntaDinsTipusEspai_Exclusions(PreguntaDinsTipusEspai):
         proxy = True
         verbose_name = "Exclusions"
         verbose_name_plural = "Exclusions"
-        ordering = ["order", ]
+        ordering = ["tipusespai_cache",  "order", ]
 
     def __str__(self):
         n_exclusions = self.exclusio_set.count()
-        agrupacio = Truncator(self.agrupaciopreguntes.text_ca).words(10)
+        agrupacio = Truncator(self.agrupaciopreguntes).words(10)
         n_exclusions_txt = (
             f" 🚫 {n_exclusions} exclusió 🚫" if n_exclusions == 1 else
             f" 🚫 {n_exclusions} exclusins 🚫" if n_exclusions > 1 else
