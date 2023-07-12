@@ -39,3 +39,31 @@ class TipusEspai(models.Model):
         verbose_name_plural = "tipus d'espais"
         ordering = ["text_ca"]
 
+
+class Espai(models.Model):
+    nom = models.CharField(
+        "Nom",
+        max_length=250,
+        blank=False,
+        help_text="Nom d'aquest espai")
+
+    municipi = models.ForeignKey(
+        "geografia.Municipi",
+        verbose_name="Municipi",
+        help_text="Municipi on es troba aquest espai",
+        on_delete=models.RESTRICT,
+        )
+    
+    adreca = models.CharField(
+        "Adreça",
+        max_length=250,
+        blank=False,
+        help_text="Adreça on es troba aquest espai")
+
+    tipus = models.ForeignKey(
+        TipusEspai,
+        verbose_name="Tipus",
+        help_text="Tipus d'espai",
+        on_delete=models.RESTRICT,
+        )
+    

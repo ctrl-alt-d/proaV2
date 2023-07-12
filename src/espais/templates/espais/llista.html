@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+
+
+{% block content %}
+
+<div class="row">
+    <h1>Els meus espais</h1>
+</div>
+<div class="row">
+    {% render_table table %}
+</div>
+
+{% endblock %}

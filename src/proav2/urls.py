@@ -29,6 +29,12 @@ urlpatterns = [
              ('usuaris.urls', "usuaris"),
              namespace="usuaris")),
 
+    # espais
+    path('espais/',
+         include(
+             ('espais.urls', "espais"),
+             namespace="espais")),
+
     path('portal/',
          include(
              ('portal.urls', "portal"),
