@@ -5,11 +5,25 @@
 
 {% block content %}
 
+
 <div class="row">
-    <h1>Els meus espais</h1>
+    <div class="{{CSSAmpladaMitja}}">
+        <h1>Els meus espais</h1>
+    </div>
 </div>
 <div class="row">
-    {% render_table table %}
+    <div class="{{CSSAmpladaMitja}}">
+        <a class="btn btn-primary" href="{% url 'espais:espais__create__blank' %}">
+            <i class="fa-solid fa-circle-plus"></i>
+            Nou espai
+        </a>    
+    </div>
+</div>
+<div class="row">
+    <div class="{{CSSAmpladaMitja}}">
+        {% render_table table %}
+    </div>
+    
 </div>
 
 {% endblock %}

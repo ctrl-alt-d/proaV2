@@ -67,8 +67,12 @@ TEMPLATES = [
                 # menús
                 'menus.menu_context_processor.menu',
 
+                # css
+                'estructures.frontend_context_processor.utils',
+
                 # `allauth` needs this from django
-                'django.template.context_processors.request',],
+                'django.template.context_processors.request',
+            ],
         },
     },
 ]
