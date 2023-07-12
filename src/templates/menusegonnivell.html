@@ -3,8 +3,10 @@
 {% load compress %}
 
 {% if menu.segonnivell %}
-<ul class="nav nav-tabs">
-    {% for menuitem in menu.segon %}
+
+
+<ul class="nav nav-tabs mt-2">
+    {% for menuitem in menu.segonnivell %}
     <li class="nav-item">
       <a
         {% if menuitem.actiu %} 

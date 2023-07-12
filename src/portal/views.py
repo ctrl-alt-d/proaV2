@@ -11,7 +11,7 @@ from django.conf import settings
 
 def home(request):
     if request.user.is_authenticated:
-        return redirect("espais:espais__blank__blank")
+        return redirect("espais:espais__llista__blank")
     else:
         return redirect(settings.LOGIN_URL)
 

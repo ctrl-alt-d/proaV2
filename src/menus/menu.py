@@ -48,25 +48,41 @@ def _extreu_ids(path):
 
 def _construeix_arbre(perfil):
 
-    arbre = [
-        MenuItem(
+    espais = MenuItem(
             text=_("Els meus espais"),
             visible=True,
-            viewprefix="espais",
-            viewdefault="espais:espais__blank__blank",
+            viewprefix="llista",
+            viewdefault="espais:espais__llista__blank",
             submenus=[]
+        )
+
+    validacions = MenuItem(
+            text=_("Les meves validacions"),
+            visible=True,
+            viewprefix="xxx",
+            viewdefault="admin:index",
+            submenus=[]
+        )
+
+    arbre = [
+        MenuItem(
+            text=_("Espais i validacions"),
+            visible=True,
+            viewprefix="espais",
+            viewdefault="espais:espais__llista__blank",
+            submenus=[espais, validacions]
         ),
         MenuItem(
             text=_("Enquesta"),
             visible=True,
-            viewprefix="portal",
+            viewprefix="enquesta",
             viewdefault="portal:enquesta__blank__blank",
             submenus=[]
         ),
         MenuItem(
             text=_("Admin"),
             visible=True,
-            viewprefix="portal",
+            viewprefix="admin",
             viewdefault="admin:index",
             submenus=[]
         ),

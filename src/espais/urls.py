@@ -7,7 +7,7 @@ from espais.views import (
 urlpatterns = [
     path(r'llista/',
          EspaiListView.as_view(),
-         name="espais__blank__blank"),
+         name="espais__llista__blank"),
     path(r'nou/',
          EspaiCreateView.as_view(),
          name="espais__create__blank"),

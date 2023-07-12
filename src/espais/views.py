@@ -27,4 +27,4 @@ class EspaiCreateView(CreateView):
         return form
 
     def get_success_url(self):
-        return reverse("espais:espais__blank__blank")
+        return reverse("espais:espais__llista__blank")
