@@ -51,8 +51,8 @@ def _construeix_arbre(perfil):
     espais = MenuItem(
             text=_("Els meus espais"),
             visible=True,
-            viewprefix="llista",
-            viewdefault="espais:espais__llista__blank",
+            viewprefix="crud",
+            viewdefault="espais:espais__crud__r",
             submenus=[]
         )
 
@@ -69,7 +69,7 @@ def _construeix_arbre(perfil):
             text=_("Espais i validacions"),
             visible=True,
             viewprefix="espais",
-            viewdefault="espais:espais__llista__blank",
+            viewdefault="espais:espais__crud__r",
             submenus=[espais, validacions]
         ),
         MenuItem(

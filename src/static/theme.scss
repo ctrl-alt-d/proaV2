@@ -5,9 +5,9 @@ $fa-font-path: "./webfonts";
 @import "./fontawesome/scss/solid.scss";
 @import "./fontawesome/scss/brands.scss";
 
-@import "./bootswatch/lux/_variables";
+@import "./bootswatch/sandstone/_variables";
 @import './bootstrap/bootstrap';
-@import "./bootswatch/lux/_bootswatch";
+@import "./bootswatch/sandstone/_bootswatch";
 
 table thead tr th.asc.orderable::before {
   @extend %fa-icon;
