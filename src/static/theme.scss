@@ -1,8 +1,11 @@
-$primary: #444ebc;
 
 $fa-font-path: "./webfonts";
 
+@import "./bootswatch/flatly/_variables";
 @import './bootstrap/bootstrap';
+@import "./bootswatch/flatly/_bootswatch";
+
+
 @import "./fontawesome/scss/fontawesome.scss";
 @import "./fontawesome/scss/solid.scss";
 @import "./fontawesome/scss/brands.scss";
