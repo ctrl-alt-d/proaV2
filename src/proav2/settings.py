@@ -67,8 +67,12 @@ TEMPLATES = [
                 # menús
                 'menus.menu_context_processor.menu',
 
+                # css
+                'estructures.frontend_context_processor.utils',
+
                 # `allauth` needs this from django
-                'django.template.context_processors.request',],
+                'django.template.context_processors.request',
+            ],
         },
     },
 ]
@@ -98,6 +102,7 @@ INSTALLED_APPS += [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.microsoft',
     'allauth.socialaccount.providers.apple',
+    'django_tables2',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -118,6 +123,8 @@ ACCOUNT_FORMS = {'login': 'usuaris.forms.UserLoginForm'}
 # ACCOUNT_EMAIL_SUBJECT_PREFIX (=”[Site] “)
 
 # End AllAuth
+
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
 
 WSGI_APPLICATION = 'proav2.wsgi.application'
 

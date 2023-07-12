@@ -31,7 +31,7 @@ def edita_perfil(request):
 
             perfil.save()
 
-            url_next = reverse('portal:enquesta__blank__blank')
+            url_next = reverse('home__blank__blank')
             messages.success(request, "Canvis realitzats correctament.")
             return HttpResponseRedirect(url_next)
     else:

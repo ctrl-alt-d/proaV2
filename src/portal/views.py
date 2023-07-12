@@ -11,7 +11,7 @@ from django.conf import settings
 
 def home(request):
     if request.user.is_authenticated:
-        return redirect("portal:enquesta__blank__blank")
+        return redirect("espais:espais__crud__r")
     else:
         return redirect(settings.LOGIN_URL)
 

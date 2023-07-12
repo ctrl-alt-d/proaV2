@@ -1,7 +1,23 @@
-$primary: #240eb1;
 
+$fa-font-path: "./webfonts";
 
+@import "./fontawesome/scss/fontawesome.scss";
+@import "./fontawesome/scss/solid.scss";
+@import "./fontawesome/scss/brands.scss";
 
-
+@import "./bootswatch/sandstone/_variables";
 @import './bootstrap/bootstrap';
+@import "./bootswatch/sandstone/_bootswatch";
 
+table thead tr th.asc.orderable::before {
+  @extend %fa-icon;
+  @extend .fa-solid;
+  content: fa-content($fa-var-sort-up);
+}
+
+table thead tr th.desc.orderable::before {
+    @extend %fa-icon;
+    @extend .fa-solid;
+    content: fa-content($fa-var-sort-down);
+  }
+  
