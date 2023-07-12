@@ -50,12 +50,26 @@ def _construeix_arbre(perfil):
 
     arbre = [
         MenuItem(
-            text=_("Pàgina Principal"),
+            text=_("Els meus espais"),
+            visible=True,
+            viewprefix="espais",
+            viewdefault="espais:espais__blank__blank",
+            submenus=[]
+        ),
+        MenuItem(
+            text=_("Enquesta"),
             visible=True,
             viewprefix="portal",
             viewdefault="portal:enquesta__blank__blank",
             submenus=[]
-        )
+        ),
+        MenuItem(
+            text=_("Admin"),
+            visible=True,
+            viewprefix="portal",
+            viewdefault="admin:index",
+            submenus=[]
+        ),
     ]
 
     return arbre
