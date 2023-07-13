@@ -22,7 +22,5 @@ crispy-bootstrap5
 # imatges
 easy-thumbnails
 
-### Pending:
-
-# django-tables2
+# fitxers xml
 openpyxl==3.0.5
